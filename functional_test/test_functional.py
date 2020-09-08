@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''
+"""
 Функциональный тест действий пользователя на сайте
-'''
+"""
 
 from selenium import webdriver
 import unittest
 
 
 class NewVisitorTest(unittest.TestCase):
-    '''Тест нового посетителя'''
+    """Тест нового посетителя"""
 
     def setUp(self) -> None:
         self.browser = webdriver.Firefox()
@@ -18,9 +18,8 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.browser.quit()
 
-
-    def test_can_start_a_list_and_retrievee_it_later(self):
-        '''Создать список и получить его позже'''
+    def test_can_start_a_list_and_retrieve_it_later(self):
+        """Создать список и получить его позже"""
 
         # Открывая браузер и заходим на наш сайт:
         self.browser.get('http://127.0.0.1:8000')
@@ -28,7 +27,6 @@ class NewVisitorTest(unittest.TestCase):
         # проверяем правильная ли у нас страница:
         # >>> Заголовок и шапка страницы указывают что это список дел
         self.assertIn('To-Do', self.browser.title)
-
 
         # Пользователю предлагается ввести элемент списка
         # Пользователь набирает в текстовом поле "Сходить в магазин за продуктами"
@@ -44,6 +42,7 @@ class NewVisitorTest(unittest.TestCase):
         # ------- >>>>> Конец сценария
 
         self.fail('Написать следующий тест')
+
 
 if __name__ == '__main__':
     unittest.main()
