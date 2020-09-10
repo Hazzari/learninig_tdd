@@ -44,12 +44,20 @@ class NewVisitorTest(unittest.TestCase):
 
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(any(row.text == "1: Сходить в магазин за продуктами" for row in rows),
-                        'Новый элемент списка не появился в таблице')
+        self.assertIn("1: Сходить в магазин за продуктами", [row.text for row in rows])
 
         # Текстовое поле по прежнему приглашает пользователя добавить еще один элемент.
         # Пользователь вводит "Купить молоко и хлеб" и нажимает enter
+        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box.send_keys('Купить молоко и хлеб')
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(1)
+
         # Страница обновляется, и теперь показывает оба элемента списка
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn("2: Купить молоко и хлеб", [row.text for row in rows])
+
         # Пользователь думает, запомнит ли сайт его список и видит что сайт сгенерировал для него уникальный URL-адрес
         # об этом выводится небольшой текст с обяснениями.
         # Пользователь посещает этот URL и видит что он отображает правильно его список.
