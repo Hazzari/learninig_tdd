@@ -1,7 +1,5 @@
-from django.http import HttpRequest
 from django.test import TestCase
-from django.urls import resolve
-from lists.views import home_page
+from lists.models import Item
 
 
 class HomePageTest(TestCase):
@@ -18,3 +16,24 @@ class HomePageTest(TestCase):
 
         self.assertIn('A new list item', response.content.decode())
         self.assertTemplateUsed(response, 'lists/index.html')
+
+
+class ItemModelTest(TestCase):
+    """тест модели элемента списка"""
+
+    def test_saving_and_retrieving_items(self):
+        first_item = Item()
+        first_item.text = 'Первый объект'
+        first_item.save()
+
+        second_item = Item()
+        second_item.text = 'Второй объект'
+        second_item.save()
+
+        save_items = Item.objects.all()
+        self.assertEqual(save_items.count(), 2)
+
+        first_saved_item = save_items[0]
+        second_saved_item = save_items[1]
+        self.assertEqual(first_saved_item.text, 'Певый объект')
+        self.assertEqual(second_saved_item.text, 'Втоой объект')
