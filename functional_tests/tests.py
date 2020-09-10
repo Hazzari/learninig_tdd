@@ -3,14 +3,14 @@
 
 """Функциональный тест действий пользователя на сайте."""
 import time
-
-from selenium import webdriver
 import unittest
 
+from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from django.test import LiveServerTestCase
 
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     """Тест нового посетителя"""
 
     def setUp(self) -> None:
@@ -22,7 +22,6 @@ class NewVisitorTest(unittest.TestCase):
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
 
-
     def tearDown(self) -> None:
         self.browser.quit()
 
@@ -30,7 +29,7 @@ class NewVisitorTest(unittest.TestCase):
         """Создать список и получить его позже"""
 
         # Открывая браузер и заходим на наш сайт:
-        self.browser.get('http://127.0.0.1:8000')
+        self.browser.get(self.live_server_url)
 
         # проверяем правильная ли у нас страница:
         # >>> Заголовок и шапка страницы указывают что это список дел
@@ -69,7 +68,3 @@ class NewVisitorTest(unittest.TestCase):
         # ------- >>>>> Конец сценария
 
         self.fail('Написать следующий тест')
-
-
-if __name__ == '__main__':
-    unittest.main()
