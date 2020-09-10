@@ -33,7 +33,7 @@ class NewVisitorTest(unittest.TestCase):
 
         # Пользователю предлагается ввести элемент списка
         input_box = self.browser.find_element_by_id('id_new_item')
-        self.assertEqual(input_box.get_attribute('placeholder'), 'Enter a to-do item')
+        self.assertEqual(input_box.get_attribute('placeholder'), 'Введите задачу')
 
         # Пользователь набирает в текстовом поле "Сходить в магазин за продуктами"
         input_box.send_keys('Сходить в магазин за продуктами')
@@ -44,7 +44,8 @@ class NewVisitorTest(unittest.TestCase):
 
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(any(row.text == "1: Сходить в магазин за продуктами" for row in rows))
+        self.assertTrue(any(row.text == "1: Сходить в магазин за продуктами" for row in rows),
+                        'Новый элемент списка не появился в таблице')
 
         # Текстовое поле по прежнему приглашает пользователя добавить еще один элемент.
         # Пользователь вводит "Купить молоко и хлеб" и нажимает enter
