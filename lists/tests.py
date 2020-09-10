@@ -12,10 +12,34 @@ class HomePageTest(TestCase):
 
     def test_can_save_a_POST_request(self):
         """тест: сохранение post-request"""
+
+        self.client.post('/', data={'item_text': 'A new list item'})
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'A new list item')
+
+    def test_redirects_after_POST(self):
+        """тест: переадресация после post-запроса"""
         response = self.client.post('/', data={'item_text': 'A new list item'})
 
-        self.assertIn('A new list item', response.content.decode())
-        self.assertTemplateUsed(response, 'lists/index.html')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_only_saves_items_when_necessary(self):
+        """тест: сорханяет элементы, только когда нужно"""
+        self.client.get('/')
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_displays_all_list_items(self):
+        """тест: отображаются все элементы списка"""
+
+        Item.objects.create(text='items 1')
+        Item.objects.create(text='items 2')
+
+        response = self.client.get('/')
+
+        self.assertIn('items 1', response.content.decode())
+        self.assertIn('items 2', response.content.decode())
 
 
 class ItemModelTest(TestCase):
@@ -30,10 +54,10 @@ class ItemModelTest(TestCase):
         second_item.text = 'Второй объект'
         second_item.save()
 
-        save_items = Item.objects.all()
-        self.assertEqual(save_items.count(), 2)
+        saved_items = Item.objects.all()
+        self.assertEqual(saved_items.count(), 2)
 
-        first_saved_item = save_items[0]
-        second_saved_item = save_items[1]
-        self.assertEqual(first_saved_item.text, 'Певый объект')
-        self.assertEqual(second_saved_item.text, 'Втоой объект')
+        first_saved_item = saved_items[0]
+        second_saved_item = saved_items[1]
+        self.assertEqual(first_saved_item.text, 'Первый объект')
+        self.assertEqual(second_saved_item.text, 'Второй объект')
