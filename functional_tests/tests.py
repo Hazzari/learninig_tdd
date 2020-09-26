@@ -8,18 +8,18 @@ import unittest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 MAX_WAIT = 3
 
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
     """Тест нового посетителя"""
 
     def setUp(self) -> None:
         self.browser = webdriver.Firefox()
 
-    def wait_for_row_in_lists_table(self, row_text):
+    def wait_for_row_in_list_table(self, row_text):
         """подтверждение строки в таблице списка"""
         start_time = time.time()
         while True:
@@ -58,7 +58,7 @@ class NewVisitorTest(LiveServerTestCase):
         # "1: Сходить в магазин за продуктами" в качестве элемента списка
         input_box.send_keys(Keys.ENTER)
 
-        self.wait_for_row_in_lists_table('1: Сходить в магазин за продуктами')
+        self.wait_for_row_in_list_table('1: Сходить в магазин за продуктами')
 
         # Текстовое поле по прежнему приглашает пользователя добавить еще один элемент.
         # Пользователь вводит "Купить молоко и хлеб" и нажимает enter
@@ -67,8 +67,8 @@ class NewVisitorTest(LiveServerTestCase):
         input_box.send_keys(Keys.ENTER)
 
         # Страница обновляется, и теперь показывает оба элемента списка
-        self.wait_for_row_in_lists_table('1: Сходить в магазин за продуктами')
-        self.wait_for_row_in_lists_table('2: Купить молоко и хлеб')
+        self.wait_for_row_in_list_table('1: Сходить в магазин за продуктами')
+        self.wait_for_row_in_list_table('2: Купить молоко и хлеб')
 
         # Пользователь думает, запомнит ли сайт его список и видит что сайт сгенерировал для него уникальный URL-адрес
         # об этом выводится небольшой текст с обяснениями.
@@ -85,7 +85,7 @@ class NewVisitorTest(LiveServerTestCase):
         input_box = self.browser.find_element_by_id('id_new_item')
         input_box.send_keys('Сходить в магазин за продуктами')
         input_box.send_keys(Keys.ENTER)
-        self.wait_for_row_in_lists_table('1: Сходить в магазин за продуктами')
+        self.wait_for_row_in_list_table('1: Сходить в магазин за продуктами')
 
         # пользователь видит что его список имеет уникальный url
         first_user_list_url = self.browser.current_url
@@ -108,7 +108,7 @@ class NewVisitorTest(LiveServerTestCase):
         input_box = self.browser.find_element_by_id('id_new_item')
         input_box.send_keys('Купить молоко')
         input_box.send_keys(Keys.ENTER)
-        self.wait_for_row_in_lists_table('1: Купить молоко')
+        self.wait_for_row_in_list_table('1: Купить молоко')
 
         # второй пользователь получает уникальный URL адрес
         second_user_list_url = self.browser.current_url
@@ -120,4 +120,25 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertNotIn('ходить в магазин за продуктами', page_text)
         self.assertIn('Купить молоко', page_text)
 
-        self.fail('Написать следующий тест')
+        # self.fail('Написать следующий тест')
+
+    def test_layout_and_styling(self):
+        """тест: тест макета и стилевого оформления"""
+        # пользователь открывает домашнюю страницу
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # Видит что поле ввода аккуратно отцентрированно
+        input_box = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(input_box.location['x'] + input_box.size['width'] / 2,
+                               512,
+                               delta=20)
+
+        # Он начинает новый список и видит, что введенные данные в центре тоже
+        input_box.send_keys('testing')
+        input_box.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: testing')
+        input_box = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(input_box.location['x'] + input_box.size['width'] / 2,
+                               512,
+                               delta=10)
